@@ -8,7 +8,7 @@ pipeline
                 git 'https://github.com/AWSRJ/mavenFirstProject.git'
             }
         }
-        stage ('Clean artifacts of previous build') {
+        stage ('Clean') {
             steps {
                 //Use Pipeline Maven Integration Plugin
                 withMaven(maven: 'maven_home') {
@@ -16,38 +16,35 @@ pipeline
                 }
             }
         }
-        stage ('Validate artifacts for current build') {
+        stage ('Validate') {
             steps {
                 withMaven(maven: 'maven_home') {
                     sh 'mvn validate'
                 }
             }
         }
-        stage ('test artifacts for current build') {
+        stage ('Test') {
             steps {
                 withMaven(maven: 'maven_home') {
                     sh 'mvn test'
                 }
+                // It will publish the JUnit test case graph
+                post {
+                    always {
+                        junit '**/target/surefire-reports/TEST-*.xml'
+                    }
+                }
             }
         }
-        stage ('package artifacts for current build') {
+        stage ('Package') {
             steps {
                 withMaven(maven: 'maven_home') {
                     sh 'mvn package'
                 }
             }
-        }
-        stage ('verify artifacts for current build') {
-            steps {
-                withMaven(maven: 'maven_home') {
-                    sh 'mvn verify'
-                }
-            }
-        }
-        stage ('install artifacts for current build') {
-            steps {
-                withMaven(maven: 'maven_home') {
-                    sh 'mvn install'
+            post {
+                success {
+                    archiveArtifacts artifacts: '**/target/mavenFirstProject-1.0-SNAPSHOT.jar', followSymlinks: false
                 }
             }
         }
