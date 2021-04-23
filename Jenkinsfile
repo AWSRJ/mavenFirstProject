@@ -2,48 +2,67 @@ pipeline
 {
     agent any
     
-    stages {
-        stage ('Pull artifacts from SCM') {
-            steps {
+    stages 
+	{
+        stage ('Pull artifacts from SCM') 
+		{
+            steps 
+			{
                 git 'https://github.com/AWSRJ/mavenFirstProject.git'
             }
         }
-        stage ('Clean') {
-            steps {
+        stage ('Clean') 
+		{
+            steps 
+			{
                 //Use Pipeline Maven Integration Plugin
-                withMaven(maven: 'maven_home') {
+                withMaven(maven: 'maven_home') 
+				{
                     sh 'mvn clean'
                 }
             }
         }
-        stage ('Validate') {
-            steps {
-                withMaven(maven: 'maven_home') {
+        stage ('Validate') 
+		{
+            steps 
+			{
+                withMaven(maven: 'maven_home') 
+				{
                     sh 'mvn validate'
                 }
             }
         }
-        stage ('Test') {
-            steps {
-                withMaven(maven: 'maven_home') {
+        stage ('Test') 
+		{
+            steps 
+			{
+                withMaven(maven: 'maven_home') 
+				{
                     sh 'mvn test'
                 }
-                // It will publish the JUnit test case graph
-                post {
-                    always {
-                        junit '**/target/surefire-reports/TEST-*.xml'
-                    }
+            }
+            // It will publish the JUnit test case graph
+            post 
+			{
+                always 
+				{
+                    junit '**/target/surefire-reports/TEST-*.xml'
                 }
             }
         }
-        stage ('Package') {
-            steps {
-                withMaven(maven: 'maven_home') {
+        stage ('Package') 
+		{
+            steps 
+			{
+                withMaven(maven: 'maven_home') 
+				{
                     sh 'mvn package'
                 }
             }
-            post {
-                success {
+            post 
+			{
+                success 
+				{
                     archiveArtifacts artifacts: '**/target/mavenFirstProject-1.0-SNAPSHOT.jar', followSymlinks: false
                 }
             }
